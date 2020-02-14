@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:taskbrake/db_provider.dart';
 import 'package:taskbrake/proc_edit_page.dart';
@@ -20,13 +21,13 @@ class _TaskEditPageState extends State<TaskEditPage> {
   Task _task;
   List<Proc> _listProc = List<Proc>();
   int _index = 0;
-  int _maxNumber = 0;
+  int _maxNumber = 1;
   Function _onChanged;
 
   _TaskEditPageState(this._task, this._onChanged);
 
   void _init() async {
-    _listProc = await DbProvider().getProcInTask(_task.taskId);
+    _listProc = await DbProvider().getProcInTask(_task.id);
 
     setState(() {});
   }
@@ -43,9 +44,11 @@ class _TaskEditPageState extends State<TaskEditPage> {
       appBar: AppBar(
         title: Text('Edit Task'),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        _add();
-      }),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            _add();
+          }),
       body: new Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -87,6 +90,18 @@ class _TaskEditPageState extends State<TaskEditPage> {
                             child: Text(_listProc[index].content),
                           ),
                           Expanded(
+                            flex: 1,
+                            child: Text(_listProc[index].time.toString()),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              DateFormat.yMMMd().format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      _listProc[index].date)),
+                            ),
+                          ),
+                          Expanded(
                             child: Container(
                               child: Checkbox(
                                 activeColor: Colors.green[300],
@@ -122,10 +137,10 @@ class _TaskEditPageState extends State<TaskEditPage> {
       int id = DateTime.now().millisecondsSinceEpoch;
       Proc proc = new Proc(
           id: id,
-          taskId: _task.taskId,
+          taskId: _task.id,
           number: _maxNumber,
           content: "",
-          time: DateTime.now().millisecondsSinceEpoch,
+          time: 0,
           date: DateTime.now().millisecondsSinceEpoch,
           status: Status.WIP.index);
       DbProvider().insert('proc', proc);

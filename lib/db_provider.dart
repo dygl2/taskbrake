@@ -30,7 +30,7 @@ class DbProvider {
           newDb.execute("""
               CREATE TABLE task
                 (
-                  taskId INTEGER PRIMARY KEY,
+                  id INTEGER PRIMARY KEY,
                   title TEXT,
                   status INTEGER,
                   deadline INTEGER
@@ -45,7 +45,7 @@ class DbProvider {
                   content TEXT,
                   time INTEGER,
                   date INTEGER,
-                  FOREIGN KEY (taskId) REFERENCES task(taskId) 
+                  FOREIGN KEY (taskId) REFERENCES task(id) 
                 )
               """);
         },
@@ -78,7 +78,7 @@ class DbProvider {
         await _db.query('task', where: 'id = ?', whereArgs: [index]);
     return List.generate(maps.length, (i) {
       return Task(
-          taskId: maps[i]['taskId'],
+          id: maps[i]['id'],
           title: maps[i]['title'],
           status: maps[i]['status'],
           deadline: maps[i]['deadline']);
@@ -90,7 +90,7 @@ class DbProvider {
     List<Map<String, dynamic>> maps = await _db.query('task');
     return List.generate(maps.length, (i) {
       return Task(
-          taskId: maps[i]['taskId'],
+          id: maps[i]['id'],
           title: maps[i]['title'],
           status: maps[i]['status'],
           deadline: maps[i]['deadline']);
