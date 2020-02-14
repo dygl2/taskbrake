@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:taskbrake/db_provider.dart';
 import 'package:taskbrake/task.dart';
 import 'package:taskbrake/proc.dart';
+import 'package:taskbrake/task_edit_page.dart';
 
 class TaskListPage extends StatefulWidget {
   TaskListPage({Key key, this.title, this.date}) : super(key: key);
@@ -48,7 +49,12 @@ class _TaskListPageState extends State<TaskListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (BuildContext context) {
+            return TaskEditPage();
+          }));
+        },
       ),
       body: Container(
         child: ListView.builder(
@@ -101,7 +107,12 @@ class _TaskListPageState extends State<TaskListPage> {
                   ],
                 ),
                 onTap: () {
-                  setState(() {});
+                  setState(() {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return TaskEditPage();
+                    }));
+                  });
                 },
               ),
             );
