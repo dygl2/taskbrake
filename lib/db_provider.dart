@@ -112,10 +112,10 @@ class DbProvider {
     });
   }
 
-  Future<List<Proc>> getProcAll() async {
+  Future<List<Proc>> getProcInTask(int id) async {
     // query sorted todo list in ascending order
-    List<Map<String, dynamic>> maps =
-        await _db.query('proc', orderBy: 'number ASC');
+    List<Map<String, dynamic>> maps = await _db.query('proc',
+        where: 'id = ?', whereArgs: [id], orderBy: 'number ASC');
     return List.generate(maps.length, (i) {
       return Proc(
           id: maps[i]['id'],

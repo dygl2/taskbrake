@@ -17,6 +17,7 @@ class TaskListPage extends StatefulWidget {
 class _TaskListPageState extends State<TaskListPage> {
   DbProvider db;
   List<Task> _listTask = List<Task>();
+  int _index = 0;
   DateTime _date;
 
   _TaskListPageState(this._date);
@@ -50,10 +51,7 @@ class _TaskListPageState extends State<TaskListPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (BuildContext context) {
-            return TaskEditPage();
-          }));
+          _add();
         },
       ),
       body: Container(
@@ -108,10 +106,7 @@ class _TaskListPageState extends State<TaskListPage> {
                 ),
                 onTap: () {
                   setState(() {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return TaskEditPage();
-                    }));
+                    _edit(_listTask[index], _index);
                   });
                 },
               ),
@@ -120,6 +115,47 @@ class _TaskListPageState extends State<TaskListPage> {
         ),
       ),
     );
+  }
+
+  void _add() {
+    setState(() {
+      _index = _listTask.length;
+      int id = DateTime.now().millisecondsSinceEpoch;
+      Task task = new Task(
+          taskId: id,
+          title: "",
+          status: Status.WIP.index,
+          deadline: DateTime.now().millisecondsSinceEpoch);
+      DbProvider().insert('task', task);
+      _listTask.add(task);
+
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (BuildContext context) {
+        return TaskEditPage(task, _onChanged);
+      }));
+    });
+  }
+
+  void _edit(Task task, int index) {
+    setState(() {
+      _index = index;
+
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (BuildContext context) {
+        return TaskEditPage(task, _onChanged);
+      }));
+    });
+  }
+
+  void _onChanged(Task task) {
+    setState(() {
+      _listTask[_index].taskId = task.taskId;
+      _listTask[_index].title = task.title;
+      _listTask[_index].status = task.status;
+      _listTask[_index].deadline = task.deadline;
+
+      DbProvider().update('task', task, _listTask[_index].taskId);
+    });
   }
 
   void _setCheckbox(bool e) {
