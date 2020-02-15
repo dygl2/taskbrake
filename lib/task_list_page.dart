@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:taskbrake/db_provider.dart';
+import 'package:taskbrake/setting_popup_menu_button.dart';
 import 'package:taskbrake/task.dart';
 import 'package:taskbrake/proc.dart';
 import 'package:taskbrake/task_edit_page.dart';
@@ -19,10 +20,6 @@ class _TaskListPageState extends State<TaskListPage> {
   int _index = 0;
 
   _TaskListPageState();
-
-  final List<String> _settingMenu = [
-    "Clear database",
-  ];
 
   void _init() async {
     await DbProvider().database;
@@ -43,26 +40,7 @@ class _TaskListPageState extends State<TaskListPage> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: <Widget>[
-          PopupMenuButton(
-            icon: Icon(Icons.settings),
-            onSelected: (String s) {
-              switch (s) {
-                case "Clear database":
-                  showConfirmationDialog(context);
-                  break;
-                default:
-                  break;
-              }
-            },
-            itemBuilder: (BuildContext context) {
-              return _settingMenu.map((String s) {
-                return PopupMenuItem(
-                  child: Text(s),
-                  value: s,
-                );
-              }).toList();
-            },
-          )
+          SettingPopupMenuButton(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -134,31 +112,6 @@ class _TaskListPageState extends State<TaskListPage> {
     );
   }
 
-  void showConfirmationDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Confirmation"),
-          content: Text("You are sure to clear the database?"),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("Cancel"),
-              onPressed: () => Navigator.pop(context),
-            ),
-            FlatButton(
-                child: Text("OK"),
-                onPressed: () {
-                  DbProvider().clearDB();
-                  Navigator.pop(context);
-                }),
-          ],
-        );
-      },
-    );
-  }
-
   void _add() {
     setState(() {
       _index = _listTask.length;
@@ -201,6 +154,9 @@ class _TaskListPageState extends State<TaskListPage> {
   }
 
   void _setCheckbox(bool e) {
-    setState(() {});
+    setState(() {
+      _listTask[_index].status =
+          e == true ? Status.DONE.index : Status.WIP.index;
+    });
   }
 }

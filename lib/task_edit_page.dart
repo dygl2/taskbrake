@@ -18,11 +18,11 @@ class TaskEditPage extends StatefulWidget {
 }
 
 class _TaskEditPageState extends State<TaskEditPage> {
-  Task _task;
+  final Task _task;
+  final Function _onChanged;
   List<Proc> _listProc = List<Proc>();
   int _index = 0;
   int _maxNumber = 1;
-  Function _onChanged;
 
   _TaskEditPageState(this._task, this._onChanged);
 
@@ -54,14 +54,14 @@ class _TaskEditPageState extends State<TaskEditPage> {
         child: Column(
           children: <Widget>[
             Expanded(
+              flex: 1,
               child: TextField(
-                autofocus: true,
+                autofocus: false,
                 controller: TextEditingController(text: _task.title),
                 decoration: InputDecoration(
                   labelText: "task title",
                 ),
                 keyboardType: TextInputType.text,
-                maxLines: 2,
                 style: new TextStyle(color: Colors.black),
                 onChanged: (text) {
                   _task.title = text;
@@ -70,6 +70,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
               ),
             ),
             Expanded(
+              flex: 5,
               child: ListView.builder(
                 itemCount: _listProc.length,
                 scrollDirection: Axis.vertical,
@@ -180,6 +181,9 @@ class _TaskEditPageState extends State<TaskEditPage> {
   }
 
   void _setCheckbox(bool e) {
-    setState(() {});
+    setState(() {
+      _listProc[_index].status =
+          e == true ? Status.DONE.index : Status.WIP.index;
+    });
   }
 }
