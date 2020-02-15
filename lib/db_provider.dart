@@ -45,6 +45,7 @@ class DbProvider {
                   content TEXT,
                   time INTEGER,
                   date INTEGER,
+                  status INTEGER,
                   FOREIGN KEY (taskId) REFERENCES task(id) 
                 )
               """);

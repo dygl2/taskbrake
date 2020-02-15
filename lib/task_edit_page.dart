@@ -28,7 +28,9 @@ class _TaskEditPageState extends State<TaskEditPage> {
 
   void _init() async {
     _listProc = await DbProvider().getProcInTask(_task.id);
-    _maxNumber = _listProc[_listProc.length - 1].number + 1;
+    if (_listProc.length > 0) {
+      _maxNumber = _listProc[_listProc.length - 1].number + 1;
+    }
 
     setState(() {});
   }
