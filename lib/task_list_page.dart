@@ -54,56 +54,81 @@ class _TaskListPageState extends State<TaskListPage> {
           itemCount: _listTask.length,
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
-            return Card(
-              child: ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 4,
-                      child: Text(
-                        _listTask[index].title,
-                        style: TextStyle(
-                            color: DateTime.now().isBefore(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        _listTask[index].deadline))
-                                ? Colors.black
-                                : Colors.redAccent),
-                      ),
+            return Dismissible(
+              key: Key(_listTask[index].id.toString()),
+              onDismissed: (direction) {
+                setState(() {
+                  DbProvider().delete('task', _listTask[index].id);
+                  _listTask.removeAt(index);
+                });
+                if (direction == DismissDirection.endToStart) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Deleted'),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Text(
-                        DateFormat.yMMMd().format(
-                            DateTime.fromMillisecondsSinceEpoch(
-                                _listTask[index].deadline)),
-                        // highlight expired item
-                        style: TextStyle(
-                            color: DateTime.now().isBefore(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        _listTask[index].deadline))
-                                ? Colors.black
-                                : Colors.redAccent),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        child: Checkbox(
-                          activeColor: Colors.green[300],
-                          value: (_listTask[index].status == Status.DONE.index)
-                              ? true
-                              : false,
-                          onChanged: _setCheckbox,
+                  );
+                }
+              },
+              background: Container(
+                color: Colors.greenAccent[50],
+              ),
+              child: Card(
+                child: ListTile(
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 4,
+                        child: Text(
+                          _listTask[index].title,
+                          style: TextStyle(
+                              color: DateTime.now().isBefore(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                          _listTask[index].deadline))
+                                  ? Colors.black
+                                  : Colors.redAccent),
                         ),
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          DateFormat.yMMMd().format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  _listTask[index].deadline)),
+                          // highlight expired item
+                          style: TextStyle(
+                              color: DateTime.now().isBefore(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                          _listTask[index].deadline))
+                                  ? Colors.black
+                                  : Colors.redAccent),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          child: Checkbox(
+                              activeColor: Colors.green[300],
+                              value:
+                                  (_listTask[index].status == Status.DONE.index)
+                                      ? true
+                                      : false,
+                              onChanged: (bool e) {
+                                setState(() {
+                                  _listTask[_index].status = e == true
+                                      ? Status.DONE.index
+                                      : Status.WIP.index;
+                                });
+                              }),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    setState(() {
+                      _edit(_listTask[index], _index);
+                    });
+                  },
                 ),
-                onTap: () {
-                  setState(() {
-                    _edit(_listTask[index], _index);
-                  });
-                },
               ),
             );
           },

@@ -28,6 +28,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
 
   void _init() async {
     _listProc = await DbProvider().getProcInTask(_task.id);
+    _maxNumber = _listProc[_listProc.length - 1].number + 1;
 
     setState(() {});
   }
@@ -75,52 +76,71 @@ class _TaskEditPageState extends State<TaskEditPage> {
                 itemCount: _listProc.length,
                 scrollDirection: Axis.vertical,
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    child: ListTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              _listProc[index].number.toString(),
-                            ),
+                  return Dismissible(
+                    key: Key(_listProc[index].id.toString()),
+                    onDismissed: (direction) {
+                      setState(() {
+                        DbProvider().delete('task', _listProc[index].id);
+                        _listProc.removeAt(index);
+                      });
+                      if (direction == DismissDirection.endToStart) {
+                        Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Deleted'),
                           ),
-                          Expanded(
-                            flex: 4,
-                            child: Text(_listProc[index].content),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(_listProc[index].time.toString()),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              DateFormat.yMMMd().format(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                      _listProc[index].date)),
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              child: Checkbox(
-                                activeColor: Colors.green[300],
-                                value: (_listProc[index].status ==
-                                        Status.DONE.index)
-                                    ? true
-                                    : false,
-                                onChanged: _setCheckbox,
+                        );
+                      }
+                    },
+                    background: Container(
+                      color: Colors.greenAccent[50],
+                    ),
+                    child: Card(
+                      child: ListTile(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                _listProc[index].number.toString(),
                               ),
                             ),
-                          ),
-                        ],
+                            Expanded(
+                              flex: 4,
+                              child: Text(_listProc[index].content),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(_listProc[index].time.toString()),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                DateFormat.yMMMd().format(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        _listProc[index].date)),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                child: Checkbox(
+                                  activeColor: Colors.green[300],
+                                  value: (_listProc[index].status ==
+                                          Status.DONE.index)
+                                      ? true
+                                      : false,
+                                  onChanged: _setCheckbox,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _edit(_listProc[index], _index);
+                          });
+                        },
                       ),
-                      onTap: () {
-                        setState(() {
-                          _edit(_listProc[index], _index);
-                        });
-                      },
                     ),
                   );
                 },
@@ -141,7 +161,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
           taskId: _task.id,
           number: _maxNumber,
           content: "",
-          time: 0,
+          time: 1,
           date: DateTime.now().millisecondsSinceEpoch,
           status: Status.WIP.index);
       DbProvider().insert('proc', proc);
