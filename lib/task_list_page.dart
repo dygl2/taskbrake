@@ -114,7 +114,7 @@ class _TaskListPageState extends State<TaskListPage> {
                                       : false,
                               onChanged: (bool e) {
                                 setState(() {
-                                  _listTask[_index].status = e == true
+                                  _listTask[index].status = e == true
                                       ? Status.DONE.index
                                       : Status.WIP.index;
                                 });
