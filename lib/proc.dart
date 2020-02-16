@@ -26,6 +26,7 @@ class Proc extends Data {
       'content': content,
       'time': time,
       'date': date,
+      'status': status,
     };
   }
 }

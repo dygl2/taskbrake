@@ -28,7 +28,9 @@ class _TaskEditPageState extends State<TaskEditPage> {
 
   void _init() async {
     _listProc = await DbProvider().getProcInTask(_task.id);
-    _maxNumber = _listProc[_listProc.length - 1].number + 1;
+    if (_listProc.length > 0) {
+      _maxNumber = _listProc[_listProc.length - 1].number + 1;
+    }
 
     setState(() {});
   }
@@ -124,13 +126,18 @@ class _TaskEditPageState extends State<TaskEditPage> {
                             Expanded(
                               child: Container(
                                 child: Checkbox(
-                                  activeColor: Colors.green[300],
-                                  value: (_listProc[index].status ==
-                                          Status.DONE.index)
-                                      ? true
-                                      : false,
-                                  onChanged: _setCheckbox,
-                                ),
+                                    activeColor: Colors.green[300],
+                                    value: (_listProc[index].status ==
+                                            Status.DONE.index)
+                                        ? true
+                                        : false,
+                                    onChanged: (bool e) {
+                                      setState(() {
+                                        _listProc[index].status = e == true
+                                            ? Status.DONE.index
+                                            : Status.WIP.index;
+                                      });
+                                    }),
                               ),
                             ),
                           ],
@@ -197,13 +204,6 @@ class _TaskEditPageState extends State<TaskEditPage> {
       _listProc[_index].status = proc.status;
 
       DbProvider().update('proc', proc, _listProc[_index].taskId);
-    });
-  }
-
-  void _setCheckbox(bool e) {
-    setState(() {
-      _listProc[_index].status =
-          e == true ? Status.DONE.index : Status.WIP.index;
     });
   }
 }

@@ -177,11 +177,4 @@ class _TaskListPageState extends State<TaskListPage> {
       DbProvider().update('task', task, _listTask[_index].id);
     });
   }
-
-  void _setCheckbox(bool e) {
-    setState(() {
-      _listTask[_index].status =
-          e == true ? Status.DONE.index : Status.WIP.index;
-    });
-  }
 }

@@ -21,15 +21,15 @@ class _SettingPopupMenuButtonState extends State<SettingPopupMenuButton> {
         bool ret = false;
         switch (s) {
           case "Clear database":
-            await OkCancelDialog.showOkCancelDialog(
+            ret = await OkCancelDialog.showOkCancelDialog(
                 context, 'Confirmation', 'You are sure to clear the database?');
             break;
           default:
             break;
         }
-        if (ret) {
-          DbProvider().clearDB();
-        }
+        //if (ret) {
+        await DbProvider().clearDB();
+        //}
       },
       itemBuilder: (BuildContext context) {
         return _settingMenu.map((String s) {
