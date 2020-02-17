@@ -82,7 +82,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
                     key: Key(_listProc[index].id.toString()),
                     onDismissed: (direction) {
                       setState(() {
-                        DbProvider().delete('task', _listProc[index].id);
+                        DbProvider().delete('proc', _listProc[index].id);
                         _listProc.removeAt(index);
                       });
                       if (direction == DismissDirection.endToStart) {
@@ -136,6 +136,10 @@ class _TaskEditPageState extends State<TaskEditPage> {
                                         _listProc[index].status = e == true
                                             ? Status.DONE.index
                                             : Status.WIP.index;
+                                        DbProvider().update(
+                                            'proc',
+                                            _listProc[index],
+                                            _listProc[index].id);
                                       });
                                     }),
                               ),
@@ -144,7 +148,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
                         ),
                         onTap: () {
                           setState(() {
-                            _edit(_listProc[index], _index);
+                            _edit(_listProc[index], index);
                           });
                         },
                       ),
@@ -203,7 +207,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
       _listProc[_index].date = proc.date;
       _listProc[_index].status = proc.status;
 
-      DbProvider().update('proc', proc, _listProc[_index].taskId);
+      DbProvider().update('proc', proc, _listProc[_index].id);
     });
   }
 }

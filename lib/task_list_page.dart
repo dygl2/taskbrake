@@ -114,9 +114,11 @@ class _TaskListPageState extends State<TaskListPage> {
                                       : false,
                               onChanged: (bool e) {
                                 setState(() {
-                                  _listTask[_index].status = e == true
+                                  _listTask[index].status = e == true
                                       ? Status.DONE.index
                                       : Status.WIP.index;
+                                  DbProvider().update('task', _listTask[index],
+                                      _listTask[index].id);
                                 });
                               }),
                         ),
@@ -125,7 +127,7 @@ class _TaskListPageState extends State<TaskListPage> {
                   ),
                   onTap: () {
                     setState(() {
-                      _edit(_listTask[index], _index);
+                      _edit(_listTask[index], index);
                     });
                   },
                 ),
