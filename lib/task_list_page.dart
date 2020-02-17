@@ -143,8 +143,11 @@ class _TaskListPageState extends State<TaskListPage> {
     setState(() {
       _index = _listTask.length;
       int id = DateTime.now().millisecondsSinceEpoch;
-      Task task =
-          new Task(id: id, title: "", status: Status.WIP.index, deadline: null);
+      Task task = new Task(
+          id: id,
+          title: "",
+          status: Status.WIP.index,
+          deadline: DateTime.now().millisecondsSinceEpoch);
       DbProvider().insert('task', task);
       _listTask.add(task);
 
