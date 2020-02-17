@@ -43,7 +43,7 @@ class DbProvider {
                   taskId INTEGER,
                   number INTEGER,
                   content TEXT,
-                  time INTEGER,
+                  time REAL,
                   date INTEGER,
                   status INTEGER,
                   FOREIGN KEY (taskId) REFERENCES task(id) 
