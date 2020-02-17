@@ -31,6 +31,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
     if (_listProc.length > 0) {
       _maxNumber = _listProc[_listProc.length - 1].number + 1;
     }
+    await _updateProcNumber();
 
     setState(() {});
   }
@@ -74,29 +75,48 @@ class _TaskEditPageState extends State<TaskEditPage> {
             ),
             Expanded(
               flex: 5,
-              child: ListView.builder(
-                itemCount: _listProc.length,
-                scrollDirection: Axis.vertical,
-                itemBuilder: (BuildContext context, int index) {
+              child: ReorderableListView(
+                onReorder: (oldIndex, newIndex) async {
+                  Proc proc;
+                  setState(() {
+                    if (oldIndex < newIndex) {
+                      newIndex -= 1;
+                    }
+                    proc = _listProc.removeAt(oldIndex);
+
+                    _listProc.insert(newIndex, proc);
+                  });
+
+                  if (proc != null) {
+                    await DbProvider().delete('proc', oldIndex);
+                    await DbProvider().insert('proc', proc);
+                    await _updateProcNumber();
+                  }
+                },
+                children: List.generate(_listProc.length, (index) {
                   return Dismissible(
                     key: Key(_listProc[index].id.toString()),
-                    onDismissed: (direction) {
-                      setState(() {
-                        DbProvider().delete('proc', _listProc[index].id);
-                        _listProc.removeAt(index);
-                      });
-                      if (direction == DismissDirection.endToStart) {
-                        Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Deleted'),
-                          ),
-                        );
+                    onDismissed: (direction) async {
+                      if (direction == DismissDirection.startToEnd) {
+                        await DbProvider().delete('proc', _listProc[index].id);
+                        setState(() {
+                          _listProc.removeAt(index);
+
+                          // Todo: of(context) has exception
+                          //Scaffold.of(context).showSnackBar(
+                          //SnackBar(
+                          //content: Text('Deleted'),
+                          //),
+                          //);
+                        });
+                        await _updateProcNumber();
                       }
                     },
                     background: Container(
                       color: Colors.greenAccent[50],
                     ),
                     child: Card(
+                      key: Key(_listProc[index].id.toString()),
                       child: ListTile(
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -154,9 +174,9 @@ class _TaskEditPageState extends State<TaskEditPage> {
                       ),
                     ),
                   );
-                },
+                }),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -197,7 +217,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
     });
   }
 
-  void _onProcChanged(Proc proc) {
+  void _onProcChanged(Proc proc) async {
     setState(() {
       _listProc[_index].id = proc.id;
       _listProc[_index].taskId = proc.taskId;
@@ -206,8 +226,6 @@ class _TaskEditPageState extends State<TaskEditPage> {
       _listProc[_index].time = proc.time;
       _listProc[_index].date = proc.date;
       _listProc[_index].status = proc.status;
-
-      DbProvider().update('proc', proc, _listProc[_index].id);
 
       // update task deadline
       int latestDate = DateTime.now().millisecondsSinceEpoch;
@@ -218,7 +236,18 @@ class _TaskEditPageState extends State<TaskEditPage> {
       });
 
       _task.deadline = latestDate;
-      DbProvider().update('task', _task, _task.id);
+    });
+
+    await DbProvider().update('proc', proc, _listProc[_index].id);
+    await DbProvider().update('task', _task, _task.id);
+  }
+
+  Future<void> _updateProcNumber() async {
+    int num = 1;
+    _listProc.forEach((Proc p) {
+      p.number = num;
+      DbProvider().update('proc', p, p.id);
+      num++;
     });
   }
 }

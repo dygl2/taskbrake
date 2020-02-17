@@ -58,16 +58,17 @@ class _TaskListPageState extends State<TaskListPage> {
               key: Key(_listTask[index].id.toString()),
               onDismissed: (direction) {
                 setState(() {
-                  DbProvider().delete('task', _listTask[index].id);
-                  _listTask.removeAt(index);
+                  if (direction == DismissDirection.startToEnd) {
+                    DbProvider().delete('task', _listTask[index].id);
+                    _listTask.removeAt(index);
+
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Deleted'),
+                      ),
+                    );
+                  }
                 });
-                if (direction == DismissDirection.endToStart) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Deleted'),
-                    ),
-                  );
-                }
               },
               background: Container(
                 color: Colors.greenAccent[50],
