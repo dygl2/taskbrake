@@ -208,6 +208,17 @@ class _TaskEditPageState extends State<TaskEditPage> {
       _listProc[_index].status = proc.status;
 
       DbProvider().update('proc', proc, _listProc[_index].id);
+
+      // update task deadline
+      int latestDate = DateTime.now().millisecondsSinceEpoch;
+      _listProc.forEach((Proc p) {
+        if (latestDate < p.date) {
+          latestDate = p.date;
+        }
+      });
+
+      _task.deadline = latestDate;
+      DbProvider().update('task', _task, _task.id);
     });
   }
 }
