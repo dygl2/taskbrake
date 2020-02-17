@@ -5,7 +5,7 @@ class Proc extends Data {
   int taskId;
   int number;
   String content;
-  int time;
+  double time;
   int date;
   int status;
 

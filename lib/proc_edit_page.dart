@@ -55,7 +55,7 @@ class _ProcEditPageState extends State<ProcEditPage> {
                 keyboardType: TextInputType.number,
                 style: TextStyle(color: Colors.black),
                 onChanged: (text) {
-                  _proc.time = int.parse(text);
+                  _proc.time = double.parse(text);
                   _onChanged(_proc);
                 },
               ),

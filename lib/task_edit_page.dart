@@ -172,7 +172,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
           taskId: _task.id,
           number: _maxNumber,
           content: "",
-          time: 1,
+          time: 1.0,
           date: DateTime.now().millisecondsSinceEpoch,
           status: Status.WIP.index);
       DbProvider().insert('proc', proc);
