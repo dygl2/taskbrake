@@ -54,7 +54,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
             _add();
           }),
       body: new Container(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: <Widget>[
             Expanded(
@@ -125,15 +125,22 @@ class _TaskEditPageState extends State<TaskEditPage> {
                               flex: 1,
                               child: Text(
                                 _listProc[index].number.toString(),
+                                style: TextStyle(fontSize: 10.0),
                               ),
                             ),
                             Expanded(
                               flex: 4,
-                              child: Text(_listProc[index].content),
+                              child: Text(
+                                _listProc[index].content,
+                                style: TextStyle(fontSize: 10.0),
+                              ),
                             ),
                             Expanded(
                               flex: 1,
-                              child: Text(_listProc[index].time.toString()),
+                              child: Text(
+                                _listProc[index].time.toString(),
+                                style: TextStyle(fontSize: 10.0),
+                              ),
                             ),
                             Expanded(
                               flex: 1,
@@ -141,6 +148,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
                                 DateFormat.yMMMd().format(
                                     DateTime.fromMillisecondsSinceEpoch(
                                         _listProc[index].date)),
+                                style: TextStyle(fontSize: 10.0),
                               ),
                             ),
                             Expanded(
