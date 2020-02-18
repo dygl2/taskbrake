@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:taskbrake/data.dart';
@@ -10,6 +11,7 @@ import 'package:taskbrake/proc.dart';
 class DbProvider {
   static Database _db;
   static DbProvider _cache = DbProvider._internal();
+  final _format = DateFormat('yyyy-MM-dd', 'ja');
   String path = "";
 
   factory DbProvider() {
@@ -117,6 +119,29 @@ class DbProvider {
     // query sorted todo list in ascending order
     List<Map<String, dynamic>> maps = await _db.query('proc',
         where: 'taskId = ?', whereArgs: [taskId], orderBy: 'number ASC');
+    return List.generate(maps.length, (i) {
+      return Proc(
+          id: maps[i]['id'],
+          taskId: maps[i]['taskId'],
+          number: maps[i]['number'],
+          content: maps[i]['content'],
+          time: maps[i]['time'],
+          date: maps[i]['date'],
+          status: maps[i]['status']);
+    });
+  }
+
+  Future<List<Proc>> getProcOnDate(int date) async {
+    DateTime tmpDate = DateTime.fromMillisecondsSinceEpoch(date);
+    int fromDate =
+        DateTime.parse(_format.format(tmpDate)).millisecondsSinceEpoch;
+    int toDate = DateTime.parse(_format.format(tmpDate.add(Duration(days: 1))))
+        .millisecondsSinceEpoch;
+    List<Map<String, dynamic>> maps = await _db.rawQuery("select * from proc " +
+        "where date>=" +
+        fromDate.toString() +
+        " and date<" +
+        toDate.toString());
     return List.generate(maps.length, (i) {
       return Proc(
           id: maps[i]['id'],
