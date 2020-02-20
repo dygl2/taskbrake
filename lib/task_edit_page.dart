@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:taskbrake/change_date_dialog.dart';
 
 import 'package:taskbrake/db_provider.dart';
 import 'package:taskbrake/proc_edit_page.dart';
@@ -91,6 +92,8 @@ class _TaskEditPageState extends State<TaskEditPage> {
                     await DbProvider().delete('proc', oldIndex);
                     await DbProvider().insert('proc', proc);
                     await _updateProcNumber();
+
+                    _onChanged(_task);
                   }
                 },
                 children: List.generate(_listProc.length, (index) {
@@ -110,6 +113,8 @@ class _TaskEditPageState extends State<TaskEditPage> {
                           //);
                         });
                         await _updateProcNumber();
+
+                        _onChanged(_task);
                       }
                     },
                     background: Container(
@@ -168,6 +173,8 @@ class _TaskEditPageState extends State<TaskEditPage> {
                                             'proc',
                                             _listProc[index],
                                             _listProc[index].id);
+
+                                        _onChanged(_task);
                                       });
                                     }),
                               ),
@@ -184,6 +191,31 @@ class _TaskEditPageState extends State<TaskEditPage> {
                   );
                 }),
               ),
+            ),
+            Expanded(
+              child: FlatButton(
+                  child: Icon(Icons.access_time),
+                  onPressed: () async {
+                    final _dialog = new ChangeDateDialog();
+                    final result = await _dialog.showChangeDateDialog(
+                        context, 'Change date', "");
+
+                    if (result != null) {
+                      setState(() {
+                        for (Proc p in _listProc) {
+                          DateTime tmpDate =
+                              DateTime.fromMillisecondsSinceEpoch(p.date);
+                          Duration tmpDuration = new Duration(days: result);
+                          tmpDate = tmpDate.add(tmpDuration);
+                          p.date = tmpDate.millisecondsSinceEpoch;
+
+                          DbProvider().update('proc', p, p.id);
+
+                          _onChanged(_task);
+                        }
+                      });
+                    }
+                  }),
             ),
           ],
         ),
