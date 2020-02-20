@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'taskbrake',
-      theme: themeData,
+      theme: new ThemeData(primaryColor: Colors.grey),
       home: TaskListPage(title: 'taskbrake'),
     );
   }
