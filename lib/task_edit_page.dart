@@ -210,9 +210,8 @@ class _TaskEditPageState extends State<TaskEditPage> {
                           p.date = tmpDate.millisecondsSinceEpoch;
 
                           DbProvider().update('proc', p, p.id);
-
-                          _onChanged(_task);
                         }
+                        _onChanged(_task);
                       });
                     }
                   }),
