@@ -6,6 +6,7 @@ import 'package:taskbrake/db_provider.dart';
 import 'package:taskbrake/proc_edit_page.dart';
 import 'package:taskbrake/task.dart';
 import 'package:taskbrake/proc.dart';
+import 'package:taskbrake/task_color.dart';
 
 class TaskEditPage extends StatefulWidget {
   Task _task;
@@ -48,6 +49,16 @@ class _TaskEditPageState extends State<TaskEditPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Task'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings_applications),
+            onPressed: () async {
+              var ret = await _showTaskColorDialog(_task);
+              await DbProvider().update('task', _task, _task.id);
+              setState(() {});
+            },
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
@@ -122,6 +133,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
                     ),
                     child: Card(
                       key: Key(_listProc[index].id.toString()),
+                      color: TaskColor.getTaskColor(_task.color),
                       child: ListTile(
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -279,6 +291,8 @@ class _TaskEditPageState extends State<TaskEditPage> {
 
     await DbProvider().update('proc', proc, _listProc[_index].id);
     await DbProvider().update('task', _task, _task.id);
+
+    _onChanged(_task);
   }
 
   Future<void> _updateProcNumber() async {
@@ -288,5 +302,64 @@ class _TaskEditPageState extends State<TaskEditPage> {
       DbProvider().update('proc', p, p.id);
       num++;
     });
+  }
+
+  Future<int> _showTaskColorDialog(Task task) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text('Select task color'),
+            children: <Widget>[
+              SimpleDialogOption(
+                  child: Icon(
+                    Icons.brightness_1,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    task.color = 0;
+                    DbProvider().update('task', _task, _task.id);
+                    Navigator.of(context).pop();
+                  }),
+              SimpleDialogOption(
+                  child: Icon(
+                    Icons.brightness_1,
+                    color: Colors.lightBlue,
+                  ),
+                  onPressed: () {
+                    task.color = 1;
+                    DbProvider().update('task', _task, _task.id);
+                    Navigator.of(context).pop();
+                  }),
+              SimpleDialogOption(
+                  child: Icon(
+                    Icons.brightness_1,
+                    color: Colors.lightGreen,
+                  ),
+                  onPressed: () {
+                    task.color = 2;
+                    DbProvider().update('task', _task, _task.id);
+                    Navigator.of(context).pop();
+                  }),
+              SimpleDialogOption(
+                  child: Icon(Icons.brightness_1, color: Colors.orange),
+                  onPressed: () {
+                    task.color = 3;
+                    DbProvider().update('task', _task, _task.id);
+                    Navigator.of(context).pop();
+                  }),
+              SimpleDialogOption(
+                  child: Icon(
+                    Icons.brightness_1,
+                    color: Colors.yellow,
+                  ),
+                  onPressed: () {
+                    task.color = 4;
+                    DbProvider().update('task', _task, _task.id);
+                    Navigator.of(context).pop();
+                  }),
+            ],
+          );
+        });
   }
 }
