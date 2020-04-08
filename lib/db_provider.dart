@@ -35,7 +35,8 @@ class DbProvider {
                   id INTEGER PRIMARY KEY,
                   title TEXT,
                   status INTEGER,
-                  deadline INTEGER
+                  deadline INTEGER,
+                  color INTEGER  
                 )
               """);
           newDb.execute("""
@@ -84,7 +85,8 @@ class DbProvider {
           id: maps[i]['id'],
           title: maps[i]['title'],
           status: maps[i]['status'],
-          deadline: maps[i]['deadline']);
+          deadline: maps[i]['deadline'],
+          color: maps[i]['color']);
     });
   }
 
@@ -96,7 +98,8 @@ class DbProvider {
           id: maps[i]['id'],
           title: maps[i]['title'],
           status: maps[i]['status'],
-          deadline: maps[i]['deadline']);
+          deadline: maps[i]['deadline'],
+          color: maps[i]['color']);
     });
   }
 

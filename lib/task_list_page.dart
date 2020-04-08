@@ -6,6 +6,7 @@ import 'package:taskbrake/setting_popup_menu_button.dart';
 import 'package:taskbrake/task.dart';
 import 'package:taskbrake/proc.dart';
 import 'package:taskbrake/task_edit_page.dart';
+import 'package:taskbrake/task_color.dart';
 
 class TaskListPage extends StatefulWidget {
   TaskListPage({Key key, this.title}) : super(key: key);
@@ -40,12 +41,12 @@ class _TaskListPageState extends State<TaskListPage> {
       tmp = await DbProvider().getProcOnDate(
           DateTime.now().add(Duration(days: i)).millisecondsSinceEpoch);
 
-      setState(() {
-        if (tmp.length > 0) {
-          _listProc[i].addAll(tmp);
-        }
-      });
+      if (tmp != null && tmp.length > 0) {
+        _listProc[i].addAll(tmp);
+      }
     }
+
+    setState(() {});
   }
 
   @override
@@ -106,7 +107,8 @@ class _TaskListPageState extends State<TaskListPage> {
           id: id,
           title: "",
           status: Status.WIP.index,
-          deadline: DateTime.now().millisecondsSinceEpoch);
+          deadline: DateTime.now().millisecondsSinceEpoch,
+          color: 0);
       DbProvider().insert('task', task);
       _listTask.add(task);
 
@@ -134,11 +136,12 @@ class _TaskListPageState extends State<TaskListPage> {
       _listTask[_index].title = task.title;
       _listTask[_index].status = task.status;
       _listTask[_index].deadline = task.deadline;
+      _listTask[_index].color = task.color;
 
       DbProvider().update('task', task, _listTask[_index].id);
     });
 
-    _init();
+    await _init();
   }
 
   Widget _setDateText(Duration duration) {
@@ -158,9 +161,11 @@ class _TaskListPageState extends State<TaskListPage> {
     return Container(
       height: PROC_LIST_HEIGHT,
       child: ListView.builder(
-          itemCount: _listProc[date].length,
+          itemCount:
+              _listProc[date].length == null ? 0 : _listProc[date].length,
           itemBuilder: (BuildContext context, int index) {
             return Card(
+              color: _getTaskColor(_listProc[date][index].taskId),
               child: ListTile(
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -229,5 +234,15 @@ class _TaskListPageState extends State<TaskListPage> {
             );
           }),
     );
+  }
+
+  Color _getTaskColor(int taskId) {
+    _listTask.forEach((Task t) {
+      if (taskId == t.id) {
+        return TaskColor.getTaskColor(t.color);
+      }
+    });
+
+    return Colors.white;
   }
 }

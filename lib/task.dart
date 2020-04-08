@@ -5,8 +5,9 @@ class Task extends Data {
   String title;
   int status;
   int deadline;
+  int color;
 
-  Task({this.id, this.title, this.status, this.deadline});
+  Task({this.id, this.title, this.status, this.deadline, this.color});
 
   Map<String, dynamic> toMap() {
     return {
@@ -14,6 +15,7 @@ class Task extends Data {
       'title': title,
       'status': status,
       'deadline': deadline,
+      'color': color,
     };
   }
 }
